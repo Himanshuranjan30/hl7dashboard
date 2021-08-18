@@ -1,7 +1,10 @@
 import React, { Component } from "react";
-import { Table} from "semantic-ui-react";
+import { Table,Button } from "semantic-ui-react";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
+import DatePicker from "react-datepicker";
+
+
 
 //create a react component with name MessageDashBoard
 export default class MessageDashBoard extends Component {
@@ -10,6 +13,15 @@ export default class MessageDashBoard extends Component {
     super(props);
     this.state = {
       messages: [],
+      masterMessages: [],
+      interfaceOptions: [],
+      selectedInterface: "",
+      messageStatus: "",
+      acknowledgementStatus: "",
+      startDate:"",
+      endDate:"",
+      message_ctrl_id:"",
+      mr_no:"",
       offset: 0,
       perPage: 5,
       currentPage: 0,
@@ -35,6 +47,7 @@ export default class MessageDashBoard extends Component {
         );
         this.setState({
           messages: slicedData,
+          masterMessages: slicedData,
           pageCount: Math.ceil(response.data.data.length / this.state.perPage),
           loading: false,
         });
@@ -58,12 +71,140 @@ export default class MessageDashBoard extends Component {
     );
   };
 
+  handleInterfaceChange = (e) => {
+    this.setState({ selectedInterface: e.target.value });
+  };
+
+  handleMessageStatusChange = (e) => {
+    this.setState({ messageStatus: e.target.value });
+  };
+
+  handleAcknowledgmentStatusChange = (e) => {
+    this.setState({ acknowledgementStatus: e.target.value });
+  };
+
+  handleFilterApply = () => {
+    //filter messages if interface
+    this.setState({
+      messages: this.state.messages.filter(
+        (message) =>
+          //check if selected interface is not empty
+          (this.state.selectedInterface !== "" &&
+            //check if selected interface is same as interface in message
+            message.interface === this.state.selectedInterface) ||
+          //check if message status is not empty
+          (this.state.messageStatus !== "" &&
+            message.message_status === this.state.messageStatus) ||
+          //check if acknowledgement status is not empty
+          (this.state.acknowledgementStatus !== "" &&
+            message.acknowledgement_status === this.state.acknowledgementStatus)
+           //check if start date is not empty
+          || (this.state.startDate !== "" &&
+            message.created_at >= this.state.startDate) ||
+          //check if end date is not empty
+          (this.state.endDate !== "" &&
+            message.created_at <= this.state.endDate)
+        
+      ),
+    });
+  };
+
+  handleFilterClear = () => {
+    //reassign messages to master messages
+    this.setState({
+      messages: this.state.masterMessages,
+      selectedInterface: "",
+      messageStatus: "",
+      acknowledgementStatus: "",
+
+    });
+  };
+
+  //handle start date change
+  handleStartDateChange = (startDate) => {
+    this.setState({ startDate: startDate });
+  };
+
+  //handle end date change
+  handleEndDateChange = (endDate) => {
+    this.setState({ endDate: endDate });
+  };
+
+  
+
   //render
 
   render() {
     //show response data in a table
     return (
-      <div>
+      <div className="center">
+        <div className="row">
+          <div className="col">
+            Interface Name
+            <select onChange={this.handleInterfaceChange}>
+            <option value="" selected disabled hidden>
+          Select</option>
+              <option value="Orange">Orange</option>
+              <option value="Radish">Radish</option>
+              <option value="Cherry">Cherry</option>
+            </select>
+          </div>
+
+          <div className="col">
+            Messsage Status
+            <select onChange={this.handleMessageStatusChange}>
+            <option value="" selected disabled hidden>
+          Select</option>
+              <option value="active">Active</option>
+              <option value="inactive">InActive</option>
+            </select>
+          </div>
+
+          <div className="col">
+            Acknowledgement Status
+            <select onChange={this.handleAcknowledgmentStatusChange}>
+            <option value="none" selected disabled hidden>
+          Select</option>
+              <option value="Orange">Orange</option>
+              <option value="Radish">Radish</option>
+              <option value="Cherry">Cherry</option>
+            </select>
+          </div>
+
+          
+          <div className="col">
+            Start Date
+            <DatePicker
+              selected={this.state.startDate}
+              onChange={(date)=>this.handleStartDateChange(date)}
+            />
+          </div>
+
+
+         
+          <div className="col">
+              End Date
+            <DatePicker
+              selected={this.state.endDate}
+              onChange={(date)=>this.handleEndDateChange(date)}
+              
+            />
+          </div>
+
+
+          {/* <div className="col">
+            Messsage Status
+            <select onChange={this.handleAcknowledgmentStatusChange}>
+              <option value="Orange">Orange</option>
+              <option value="Radish">Radish</option>
+              <option value="Cherry">Cherry</option>
+            </select>
+          </div> */}
+          
+          <Button className="ui primary button" onClick={this.handleFilterApply}>Filter</Button>
+          <Button onClick={this.handleFilterClear}>Clear</Button>
+
+        </div>
         <Table celled>
           <Table.Header fullWidth>
             <Table.Row>

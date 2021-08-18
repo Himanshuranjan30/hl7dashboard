@@ -1,3 +1,23 @@
+
+.center{
+  padding-top: 10%;
+}
+.row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+.col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.block {
+  width: 100px;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -19,7 +39,7 @@ code {
   outline: none;
 }
 .pagination > .active > a{
-  background-color: #47ccde ;
+  background-color: #00bcd4;
   border-color: #47ccde ;
   color: #fff;
 }
