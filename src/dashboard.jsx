@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import { Table,Button } from "semantic-ui-react";
+import { Table, Button } from "semantic-ui-react";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
 import DatePicker from "react-datepicker";
-
-
 
 //create a react component with name MessageDashBoard
 export default class MessageDashBoard extends Component {
@@ -18,10 +16,10 @@ export default class MessageDashBoard extends Component {
       selectedInterface: "",
       messageStatus: "",
       acknowledgementStatus: "",
-      startDate:"",
-      endDate:"",
-      message_ctrl_id:"",
-      mr_no:"",
+      startDate: "",
+      endDate: "",
+      message_ctrl_id: "",
+      mr_no: "",
       offset: 0,
       perPage: 5,
       currentPage: 0,
@@ -97,14 +95,22 @@ export default class MessageDashBoard extends Component {
             message.message_status === this.state.messageStatus) ||
           //check if acknowledgement status is not empty
           (this.state.acknowledgementStatus !== "" &&
-            message.acknowledgement_status === this.state.acknowledgementStatus)
-           //check if start date is not empty
-          || (this.state.startDate !== "" &&
+            message.acknowledgement_status ===
+              this.state.acknowledgementStatus) ||
+          //check if start date is not empty
+          (this.state.startDate !== "" &&
             message.created_at >= this.state.startDate) ||
           //check if end date is not empty
           (this.state.endDate !== "" &&
             message.created_at <= this.state.endDate)
-        
+          //check if message_ctrl_id is not empty
+          || (this.state.message_ctrl_id !== "" &&
+            message.message_ctrl_id === this.state.message_ctrl_id)
+          //check if mr_no is not empty
+          || (this.state.mr_no !== "" &&
+            message.mr_no === this.state.mr_no)
+      
+
       ),
     });
   };
@@ -116,7 +122,6 @@ export default class MessageDashBoard extends Component {
       selectedInterface: "",
       messageStatus: "",
       acknowledgementStatus: "",
-
     });
   };
 
@@ -130,7 +135,15 @@ export default class MessageDashBoard extends Component {
     this.setState({ endDate: endDate });
   };
 
-  
+  //handle message ctrl id change
+  handleMessageCtrlIdChange = (e) => {
+    this.setState({ message_ctrl_id: e.target.value });
+  };
+
+  //handle mr no change
+  handleMrNoChange = (e) => {
+    this.setState({ mr_no: e.target.value });
+  };
 
   //render
 
@@ -142,8 +155,9 @@ export default class MessageDashBoard extends Component {
           <div className="col">
             Interface Name
             <select onChange={this.handleInterfaceChange}>
-            <option value="" selected disabled hidden>
-          Select</option>
+              <option value="" selected disabled hidden>
+                Select
+              </option>
               <option value="Orange">Orange</option>
               <option value="Radish">Radish</option>
               <option value="Cherry">Cherry</option>
@@ -153,8 +167,9 @@ export default class MessageDashBoard extends Component {
           <div className="col">
             Messsage Status
             <select onChange={this.handleMessageStatusChange}>
-            <option value="" selected disabled hidden>
-          Select</option>
+              <option value="" selected disabled hidden>
+                Select
+              </option>
               <option value="active">Active</option>
               <option value="inactive">InActive</option>
             </select>
@@ -163,47 +178,60 @@ export default class MessageDashBoard extends Component {
           <div className="col">
             Acknowledgement Status
             <select onChange={this.handleAcknowledgmentStatusChange}>
-            <option value="none" selected disabled hidden>
-          Select</option>
+              <option value="none" selected disabled hidden>
+                Select
+              </option>
               <option value="Orange">Orange</option>
               <option value="Radish">Radish</option>
               <option value="Cherry">Cherry</option>
             </select>
           </div>
 
-          
           <div className="col">
             Start Date
             <DatePicker
               selected={this.state.startDate}
-              onChange={(date)=>this.handleStartDateChange(date)}
+              onChange={(date) => this.handleStartDateChange(date)}
             />
           </div>
 
-
-         
           <div className="col">
-              End Date
+            End Date
             <DatePicker
               selected={this.state.endDate}
-              onChange={(date)=>this.handleEndDateChange(date)}
-              
+              onChange={(date) => this.handleEndDateChange(date)}
             />
           </div>
 
-
-          {/* <div className="col">
-            Messsage Status
-            <select onChange={this.handleAcknowledgmentStatusChange}>
-              <option value="Orange">Orange</option>
-              <option value="Radish">Radish</option>
-              <option value="Cherry">Cherry</option>
-            </select>
-          </div> */}
-          
-          <Button className="ui primary button" onClick={this.handleFilterApply}>Filter</Button>
+          <div className="col">
+            MessageCtrlId
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Message Ctrl Id"
+              value={this.state.message_ctrl_id}
+              onChange={this.handleMessageCtrlIdChange}
+            />
+          </div>
+          <div className="col">
+            MrNo.
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Mr No"
+              value={this.state.mr_no}
+              onChange={this.handleMrNoChange}
+            />
+          </div>
+        </div>
+        <div className="buttonContainer">
+          <Button
+            className="ui primary button"
+            onClick={this.handleFilterApply}
+          >
+            Filter
+          </Button>
           <Button onClick={this.handleFilterClear}>Clear</Button>
-
         </div>
         <Table celled>
           <Table.Header fullWidth>
@@ -220,7 +248,9 @@ export default class MessageDashBoard extends Component {
               return (
                 <Table.Row key={message.message_ctrl_id}>
                   <Table.Cell>{message.message_ctrl_id}</Table.Cell>
-                  <Table.Cell>{message.message}</Table.Cell>
+                  <Table.Cell data-title={message.message}>
+                    {message.message}
+                  </Table.Cell>
                   <Table.Cell>{message.message_status}</Table.Cell>
                   <Table.Cell>{message.acknowledgement}</Table.Cell>
                   <Table.Cell>{message.acknowledgement_status}</Table.Cell>

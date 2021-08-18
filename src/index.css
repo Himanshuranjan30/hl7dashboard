@@ -1,6 +1,14 @@
 
 .center{
-  padding-top: 10%;
+  padding-top: 5%;
+}
+
+.buttonContainer{
+  width: auto;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 20px;
+  padding-right: 20px;
 }
 .row {
   width: 100%;
@@ -30,6 +38,33 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+[data-title] {
+	font-size: 14px;
+	position: relative;
+	cursor: help;
+}
+  
+[data-title]:hover::before {
+	content: attr(data-title);
+  opacity: 1;
+	position: absolute;
+  margin-top:33px;
+	padding: 10px;
+	background: #000;
+	color: #fff;
+	font-size: 14px;
+  width:300px;
+	white-space: wrap;
+}
+[data-title]:hover::after {
+	content: '';
+	position: absolute;
+  opacity: 1;
+	bottom: -12px;
+	left: 8px;
+	border: 8px solid transparent;	
+	border-bottom: 8px solid #000;
 }
 
 .pagination {
