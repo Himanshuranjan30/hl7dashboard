@@ -1,4 +1,4 @@
-
+/* 
 .center{
   padding-top: 5%;
 }
@@ -14,12 +14,12 @@
   width: 100%;
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: flex-start;
 }
 .col {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  padding: 10px
 }
 
 .block {
@@ -94,4 +94,4 @@ code {
 }
 .pagination > li:first-child > a, .pagination > li:first-child > span, .pagination > li:last-child > a, .pagination > li:last-child > span{
   border-radius: unset
-}
+} */

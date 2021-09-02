@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { Table, Button } from "semantic-ui-react";
+import { Table, Button, Form } from "semantic-ui-react";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
 import DatePicker from "react-datepicker";
+import "./test.css";
 
 //create a react component with name MessageDashBoard
 export default class MessageDashBoard extends Component {
@@ -27,18 +28,41 @@ export default class MessageDashBoard extends Component {
     };
     this.handlePageClick = this.handlePageClick.bind(this);
   }
-  //componentDidMount
-  componentDidMount() {
-    this.getMessages();
-  }
+  
   //getMessages
   getMessages() {
     this.setState({ loading: true });
+    //check if params are not empty then create params object
+    let params = {};
+    if (this.state.selectedInterface !== "") {
+      params.interface = this.state.selectedInterface;
+    }
+    if (this.state.messageStatus !== "") {
+      params.message_status = this.state.messageStatus;
+    }
+    if (this.state.acknowledgementStatus !== "") {
+      params.acknowledgement_status = this.state.acknowledgementStatus;
+    }
+    if (this.state.startDate !== "") {
+      params.start_date = this.state.startDate;
+    }
+    if (this.state.endDate !== "") {
+      params.end_date = this.state.endDate;
+    }
+    if (this.state.message_ctrl_id !== "") {
+      params.message_ctrl_id = this.state.message_ctrl_id;
+    }
+    if (this.state.mr_no !== "") {
+      params.mr_no = this.state.mr_no;
+    }
+
     axios
-      .get("https://my-json-server.typicode.com/himanshuranjan30/demo/db")
+      .get("https://my-json-server.typicode.com/himanshuranjan30/demo/db", {
+        params: params,
+      })
       .then((response) => {
-        console.log(response.data.data);
-        var messagesData = response.data.data;
+        console.log(response.data.messages);
+        var messagesData = response.data.messages;
         var slicedData = messagesData.slice(
           this.state.offset,
           this.state.offset + this.state.perPage
@@ -46,7 +70,7 @@ export default class MessageDashBoard extends Component {
         this.setState({
           messages: slicedData,
           masterMessages: slicedData,
-          pageCount: Math.ceil(response.data.data.length / this.state.perPage),
+          pageCount: Math.ceil(response.data.messages.length / this.state.perPage),
           loading: false,
         });
       })
@@ -83,36 +107,34 @@ export default class MessageDashBoard extends Component {
 
   handleFilterApply = () => {
     //filter messages if interface
-    this.setState({
-      messages: this.state.messages.filter(
-        (message) =>
-          //check if selected interface is not empty
-          (this.state.selectedInterface !== "" &&
-            //check if selected interface is same as interface in message
-            message.interface === this.state.selectedInterface) ||
-          //check if message status is not empty
-          (this.state.messageStatus !== "" &&
-            message.message_status === this.state.messageStatus) ||
-          //check if acknowledgement status is not empty
-          (this.state.acknowledgementStatus !== "" &&
-            message.acknowledgement_status ===
-              this.state.acknowledgementStatus) ||
-          //check if start date is not empty
-          (this.state.startDate !== "" &&
-            message.created_at >= this.state.startDate) ||
-          //check if end date is not empty
-          (this.state.endDate !== "" &&
-            message.created_at <= this.state.endDate)
-          //check if message_ctrl_id is not empty
-          || (this.state.message_ctrl_id !== "" &&
-            message.message_ctrl_id === this.state.message_ctrl_id)
-          //check if mr_no is not empty
-          || (this.state.mr_no !== "" &&
-            message.mr_no === this.state.mr_no)
-      
-
-      ),
-    });
+    // this.setState({
+    //   messages: this.state.messages.filter(
+    //     (message) =>
+    //       //check if selected interface is not empty
+    //       (this.state.selectedInterface !== "" &&
+    //         //check if selected interface is same as interface in message
+    //         message.interface === this.state.selectedInterface) ||
+    //       //check if message status is not empty
+    //       (this.state.messageStatus !== "" &&
+    //         message.message_status === this.state.messageStatus) ||
+    //       //check if acknowledgement status is not empty
+    //       (this.state.acknowledgementStatus !== "" &&
+    //         message.acknowledgement_status ===
+    //           this.state.acknowledgementStatus) ||
+    //       //check if start date is not empty
+    //       (this.state.startDate !== "" &&
+    //         message.created_at >= this.state.startDate) ||
+    //       //check if end date is not empty
+    //       (this.state.endDate !== "" &&
+    //         message.created_at <= this.state.endDate) ||
+    //       //check if message_ctrl_id is not empty
+    //       (this.state.message_ctrl_id !== "" &&
+    //         message.message_ctrl_id === this.state.message_ctrl_id) ||
+    //       //check if mr_no is not empty
+    //       (this.state.mr_no !== "" && message.mr_no === this.state.mr_no)
+    //   ),
+    // });
+    this.getMessages();
   };
 
   handleFilterClear = () => {
@@ -129,6 +151,7 @@ export default class MessageDashBoard extends Component {
   handleStartDateChange = (startDate) => {
     this.setState({ startDate: startDate });
   };
+  truncate = (str, n) => (str.length > n ? `${str.substr(0, n - 1)}...` : str);
 
   //handle end date change
   handleEndDateChange = (endDate) => {
@@ -186,7 +209,8 @@ export default class MessageDashBoard extends Component {
               <option value="Cherry">Cherry</option>
             </select>
           </div>
-
+        </div>
+        <div className="row">
           <div className="col">
             Start Date
             <DatePicker
@@ -246,13 +270,13 @@ export default class MessageDashBoard extends Component {
           <Table.Body>
             {this.state.messages.map((message) => {
               return (
-                <Table.Row key={message.message_ctrl_id}>
-                  <Table.Cell>{message.message_ctrl_id}</Table.Cell>
-                  <Table.Cell data-title={message.message}>
-                    {message.message}
+                <Table.Row key={message.msg_id}>
+                  <Table.Cell>{message.msg_id}</Table.Cell>
+                  <Table.Cell data-title={message.job_data}>
+                    {this.truncate(message.job_data,50)}
                   </Table.Cell>
-                  <Table.Cell>{message.message_status}</Table.Cell>
-                  <Table.Cell>{message.acknowledgement}</Table.Cell>
+                  <Table.Cell>{message.status}</Table.Cell>
+                  <Table.Cell>{message.acknowledgement_msg}</Table.Cell>
                   <Table.Cell>{message.acknowledgement_status}</Table.Cell>
                 </Table.Row>
               );
